@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Virtual Gamer</title>
+
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <header>
+        <h1>Tienda Virtual Gamer</h1>
+
+        <button id="botonCarrito">
+            🛒 Carrito (<span id="contador">0</span>)
+        </button>
+    </header>
+
+    <main>
+        <h2>Nuestros productos</h2>
+
+        <section id="contenedorProductos" class="productos">
+            <p>Cargando productos...</p>
+        </section>
+
+        <section id="panelCarrito" class="oculto">
+            <h2>Mi carrito</h2>
+
+            <ul id="listaCarrito"></ul>
+
+            <p>
+                Total: $<span id="total">0.00</span>
+            </p>
+
+            <button onclick="vaciarCarrito()">
+                Vaciar carrito
+            </button>
+        </section>
+    </main>
+
+    <script src="carrito.js"></script>
+
+    <script>
+        fetch("productos.php")
+            .then(respuesta => respuesta.json())
+            .then(productos => {
+
+                const contenedor = document.getElementById(
+                    "contenedorProductos"
+                );
+
+                contenedor.innerHTML = "";
+
+                productos.forEach(producto => {
+
+                    const tarjeta = document.createElement("article");
+
+                    tarjeta.classList.add("producto");
+
+                    const imagen = document.createElement("img");
+                    imagen.src = producto.imagen;
+                    imagen.alt = producto.nombre;
+
+                    const nombre = document.createElement("h3");
+                    nombre.textContent = producto.nombre;
+
+                    const descripcion = document.createElement("p");
+                    descripcion.textContent = producto.descripcion;
+
+                    const precio = document.createElement("p");
+                    precio.textContent = "$" + Number(producto.precio).toFixed(2);
+
+                    const boton = document.createElement("button");
+                    boton.textContent = "Agregar al carrito";
+
+                    boton.addEventListener("click", () => {
+                        agregarCarrito(
+                            producto.id,
+                            producto.nombre,
+                            Number(producto.precio)
+                        );
+                    });
+
+                    tarjeta.append(
+                        imagen,
+                        nombre,
+                        descripcion,
+                        precio,
+                        boton
+                    );
+
+                    contenedor.appendChild(tarjeta);
+                });
+            })
+            .catch(error => {
+                document.getElementById("contenedorProductos").textContent =
+                    "Error al cargar los productos.";
+                console.error(error);
+            });
+    </script>
+
+</body>
+</html>
